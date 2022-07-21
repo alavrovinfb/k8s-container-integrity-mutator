@@ -54,7 +54,7 @@ func AdmissionResponseFromReview(admReview *admissionv1.AdmissionReview) (*admis
 	patchType := v1.PatchTypeJSONPatch
 
 	log.Println("pod has following labels", pod.Labels)
-	if _, ok := pod.Labels["hasher-webhook-injector-sidecar"]; ok {
+	if _, ok := pod.Labels["hasher-certificates-injector-sidecar"]; ok {
 		file, err := os.Open("/app/patch-json-command.json")
 		if err != nil {
 			log.Fatal("error did not opened the file", err)

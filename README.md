@@ -9,8 +9,8 @@ cfssl gencert \
 -profile=default \
 ./tls/ca-csr.json | cfssljson -bare /tmp/tcpdump-webhook
 
-mv /tmp/tcpdump-webhook.pem ./ssl/tcpdump.pem
-mv /tmp/tcpdump-webhook-key.pem ./ssl/tcpdump.key
+mv /tmp/tcpdump-webhook.pem ./certificates/ssl/tcpdump.pem
+mv /tmp/tcpdump-webhook-key.pem ./certificates/ssl/tcpdump.key
 
 Update ConfigMap data in the manifest/webhook-deployment.yaml file with your key and certificate.
 cat ./ssl/tcpdump.key | base64 | tr -d '\n'
