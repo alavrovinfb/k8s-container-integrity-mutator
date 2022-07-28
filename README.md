@@ -1,30 +1,40 @@
+# k8s-container-integrity-mutator
+## Architecture
+### Statechart diagram
+![File location: docs/diagrams/mutatorStatechartDiagram.png](/docs/diagrams/mutatorStatechartDiagram.png?raw=true "Statechart diagram")
+### Sequence diagram
+![File location: docs/diagrams/mutatorSequenceDiagram.png](/docs/diagrams/mutatorSequenceDiagram.png?raw=true "Sequence diagram")
+## Quick start
+Generate CA in /tmp :
 ```
-cfssl gencert -initca ./tls/ca-csr.json | cfssljson -bare /tmp/ca
+cfssl gencert -initca ./webhook/tls/ca-csr.json | cfssljson -bare /tmp/ca
+```
 
+Generate private key and certificate for SSL connection:
+```
 cfssl gencert \
 -ca=/tmp/ca.pem \
 -ca-key=/tmp/ca-key.pem \
--config=./tls/ca-config.json \
--hostname="tcpdump-webhook,tcpdump-webhook.default.svc.cluster.local,tcpdump-webhook.default.svc,localhost,127.0.0.1" \
+-config=./webhook/tls/ca-config.json \
+-hostname="k8s-webhook-injector,k8s-webhook-injector.default.svc.cluster.local,k8s-webhook-injector.default.svc,localhost,127.0.0.1" \
 -profile=default \
-./tls/ca-csr.json | cfssljson -bare /tmp/tcpdump-webhook
+./webhook/tls/ca-csr.json | cfssljson -bare /tmp/k8s-webhook-injector
+```
 
-mv /tmp/tcpdump-webhook.pem ./certificates/ssl/tcpdump.pem
-mv /tmp/tcpdump-webhook-key.pem ./certificates/ssl/tcpdump.key
+Move your SSL key and certificate to the ssl directory:
+```
+mkdir webhook/ssl
+mv /tmp/k8s-webhook-injector.pem ./webhook/ssl/k8s-webhook-injector.pem
+mv /tmp/k8s-webhook-injector-key.pem ./webhook/ssl/k8s-webhook-injector.key
+```
 
-Update ConfigMap data in the manifest/webhook-deployment.yaml file with your key and certificate.
-cat ./ssl/tcpdump.key | base64 | tr -d '\n'
-cat ./ssl/tcpdump.pem | base64 | tr -d '\n'
+Update configuration data in the manifests/webhook/webhook-configMap.yaml file with your key in the appropriate field `data:server.key` and certificate in the appropriate field `data:server.crt:`:
+```
+cat ./webhook/ssl/k8s-webhook-injector.key | base64 | tr -d '\n'
+cat ./webhook/ssl/k8s-webhook-injector.pem | base64 | tr -d '\n'
+```
 
-Update caBundle value in the manifest/webhook-configuration.yaml file with your base64 encoded CA certificate.
+Update field `caBundle` value in the manifests/webhook/webhook-configuration.yaml file with your base64 encoded CA certificate:
+```
 cat /tmp/ca.pem | base64 | tr -d '\n'
-
-docker build -t dyslexicat/tcpdump-webhook .
-docker build -t dyslexicat/tcpdump-alpine -f docker/Dockerfile .
-
-
-kubectl apply -f manifests/webhook-deployment.yaml
-kubectl apply -f manifests/webhook-configuration.yaml
-
-kubectl apply -f manifests/test-pod.yaml
 ```
