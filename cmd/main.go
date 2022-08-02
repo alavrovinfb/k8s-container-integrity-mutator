@@ -70,5 +70,5 @@ func main() {
 		MaxHeaderBytes: 1 << 20, // 1048576
 	}
 
-	log.Fatal(s.ListenAndServeTLS("./certificates/ssl/k8s-certificates-injector.pem", "./certificates/ssl/k8s-certificates-injector.key"))
+	log.Fatal(s.ListenAndServeTLS("./ssl/k8s-webhook-injector.pem", "./ssl/k8s-webhook-injector.key"))
 }

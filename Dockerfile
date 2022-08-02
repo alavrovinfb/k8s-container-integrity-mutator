@@ -5,9 +5,11 @@ ENV CGO_ENABLED 0
 RUN apk add git openssl
 
 WORKDIR /usr/local/go/src/k8s-webhook-injector
-ADD certificates .
+ADD . /usr/local/go/src/k8s-webhook-injector
 RUN go mod download
-RUN go build ./cmd/k8s-certificates-injector
+RUN go build -o k8s-webhook-injector cmd/main.go
+
+RUN chmod +x k8s-webhook-injector
 
 FROM scratch
 WORKDIR /app
