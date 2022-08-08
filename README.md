@@ -36,18 +36,36 @@ cfssl gencert \
 
 Move your SSL key and certificate to the ssl directory:
 ```
-mkdir webhook/ssl
 mv /tmp/k8s-webhook-injector.pem ./certificates/ssl/k8s-webhook-injector.pem
 mv /tmp/k8s-webhook-injector-key.pem ./certificates/ssl/k8s-webhook-injector.key
 ```
 
-Update configuration data in the manifests/webhook/webhook-configMap.yaml file with your key in the appropriate field `data:server.key` and certificate in the appropriate field `data:server.crt:`:
+Update configuration data in the helm-charts/mutator/values.yaml file with your key in the appropriate field `serverKey` and certificate in the appropriate field `serverCrt`:
 ```
 cat ./certificates/ssl/k8s-webhook-injector.key | base64 | tr -d '\n'
 cat ./certificates/ssl/k8s-webhook-injector.pem | base64 | tr -d '\n'
 ```
 
-Update field `caBundle` value in the manifests/webhook/webhook-configuration.yaml file with your base64 encoded CA certificate:
+Update field `caBundle` value in the helm-charts/mutator/values.yaml file with your base64 encoded CA certificate:
 ```
 cat /tmp/ca.pem | base64 | tr -d '\n'
+```
+
+Build docker images mutator:
+```
+eval $(minikube docker-env)
+docker build -t mutator .
+```
+## :hammer: Installing components
+### Install Helm
+Before using helm charts you need to install helm on your local machine.  
+You can find the necessary installation information at this link https://helm.sh/docs/intro/install/
+
+Install helm chart with mutator app
+```
+helm install mutator helm-charts/mutator
+```
+Install helm chart with demo app
+```
+helm install demo-app helm-charts/demo-app-to-inject
 ```
