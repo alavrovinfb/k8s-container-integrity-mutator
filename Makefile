@@ -1,4 +1,5 @@
-BINARY_NAME=mutator
+BINARY_NAME=mutator_app
+APP_NAME=mutator
 
 ## Downloads the Go module.
 .PHONY : mod-download
@@ -16,6 +17,10 @@ dev-dependencies: minikube update docker helm-all
 docker:
 	@eval $$(minikube docker-env) ;\
     docker build -t mutator:latest -f Dockerfile .
+
+.PHONY: helm
+helm-mutator:
+	helm install ${APP_NAME} helm-charts/mutator
 
 .PHONY : tidy
 tidy: ## Cleans the Go module.
