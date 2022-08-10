@@ -1,6 +1,6 @@
 BINARY_NAME=mutator_app
 APP_NAME=mutator
-
+DEMO_NAME=demo
 ## Downloads the Go module.
 .PHONY : mod-download
 mod-download:
@@ -21,6 +21,9 @@ docker:
 .PHONY: helm
 helm-mutator:
 	helm install ${APP_NAME} helm-charts/mutator
+
+helm-demo:
+	helm install ${DEMO_NAME} helm-charts/demo-app-to-inject
 
 .PHONY : tidy
 tidy: ## Cleans the Go module.
