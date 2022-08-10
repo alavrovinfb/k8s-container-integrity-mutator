@@ -17,7 +17,8 @@ When applying a new scheme to a cluster, the application monitors the presence o
 ![File location: docs/diagrams/mutatorStatechartDiagram.png](/docs/diagrams/mutatorStatechartDiagram.png?raw=true "Statechart diagram")
 ### Sequence diagram
 ![File location: docs/diagrams/mutatorSequenceDiagram.png](/docs/diagrams/mutatorSequenceDiagram.png?raw=true "Sequence diagram")
-## Quick start
+## :hammer: Installing components
+### Generate certificates
 Generate CA in /tmp :
 ```
 cfssl gencert -initca ./certificates/tls/ca-csr.json | cfssljson -bare /tmp/ca
@@ -50,17 +51,24 @@ Update field `caBundle` value in the helm-charts/mutator/values.yaml file with y
 ```
 cat /tmp/ca.pem | base64 | tr -d '\n'
 ```
+### Demo-app
+Here is a demo application in which a busybox container in `patch-json-command.json` is injected to a pod with an nginx container
 
 Build docker images mutator:
 ```
 eval $(minikube docker-env)
 docker build -t mutator .
 ```
-## :hammer: Installing components
-### Install Helm
+## Install Helm
 Before using helm charts you need to install helm on your local machine.  
 You can find the necessary installation information at this link https://helm.sh/docs/intro/install/
 
+### Configuration
+To work properly, you first need to sett the configuration files:
++ values in the file `helm-charts/mutator/values.yaml`
++ values in the file `helm-charts/demo-app-to-inject/values.yaml`
+
+### Run helm-charts
 Install helm chart with mutator app
 ```
 helm install mutator helm-charts/mutator
