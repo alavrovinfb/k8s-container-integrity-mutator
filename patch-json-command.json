@@ -3,30 +3,8 @@
   "op":"add",
   "path":"/spec/containers/1",
   "value":{
-    "image":"hasher:latest",
-    "imagePullPolicy":"Never",
-    "name":"hasher-sidecar",
-    "envFrom": [
-      {
-        "secretRef": {
-          "name": "db-secret-database-to-integrity-sum"
-        }
-      }
-    ],
-    "env": [
-      {
-        "name": "POD_NAME",
-        "valueFrom": {
-          "fieldRef": {
-            "fieldPath": "metadata.name"
-          }
-        }
-      },
-      {
-        "name": "DEPLOYMENT_TYPE",
-        "value": "deployment"
-      }
-    ],
+    "image":"busybox:latest",
+    "name":"shell",
     "resources": {
       "limits": {
         "memory": "50Mi",
