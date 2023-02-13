@@ -18,7 +18,8 @@ spec:
     metadata:
       labels:
         app: {{ .Values.metadata.appName }}
-        hasher-certificates-injector-sidecar: "true"
+      annotations:
+        integrity-monitor/inject: "true"
     spec:
       shareProcessNamespace: true
       containers:
