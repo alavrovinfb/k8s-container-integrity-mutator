@@ -1,0 +1,17 @@
+# This file is intended
+# for configuring a test pod
+# to demonstrate the working of the application.
+# Here you can see an example of running a pod with a nginx container
+
+# Container image variables
+container:
+  name: nginx # Container name
+  image: nginx:latest # Container image that you deploy to the cluster
+
+# Name and identifier variables
+metadata:
+  deploymentName: nginx-webhook # Set the unique name for deployment schema
+  appName: nginx-app # Application name label
+
+# Number of replicas
+replicaCount: 1
