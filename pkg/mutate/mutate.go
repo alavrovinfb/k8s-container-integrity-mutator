@@ -5,73 +5,65 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
-	"net/http"
 	"os"
+	"strconv"
 
+	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
-	v1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func AdmissionReviewFromRequest(r *http.Request) (*admissionv1.AdmissionReview, error) {
-	// Validate that the incoming content type is correct.
-	if r.Header.Get("Content-Type") != "application/json" {
-		return nil, fmt.Errorf("expected application/json content-type")
-	}
+const AnnotationIntegrityMonitorInject = "integrity-monitor/inject"
 
-	admissionReviewRequest := &admissionv1.AdmissionReview{}
-
-	err := json.NewDecoder(r.Body).Decode(&admissionReviewRequest)
-	if err != nil {
-		return nil, err
-	}
-	return admissionReviewRequest, nil
-}
-
-func AdmissionResponseFromReview(admReview *admissionv1.AdmissionReview) (*admissionv1.AdmissionResponse, error) {
+func InjectIntegrityMonitor(logger *logrus.Logger, admReq *admissionv1.AdmissionRequest) (*admissionv1.AdmissionResponse, error) {
 	// check if valid pod resource
 	podResource := metav1.GroupVersionResource{Group: "", Version: "v1", Resource: "pods"}
-	if admReview.Request.Resource != podResource {
-		err := fmt.Errorf("did not receive pod, got %s", admReview.Request.Resource.Resource)
-		return nil, err
+	if admReq.Resource != podResource {
+		return nil, fmt.Errorf("Receive unexpected resource type: %s", admReq.Resource.Resource)
 	}
 
-	admissionResponse := &admissionv1.AdmissionResponse{}
+	admissionResponse := admissionv1.AdmissionResponse{
+		Allowed: true,
+	}
 
 	// Decode the pod from the AdmissionReview.
-	rawRequest := admReview.Request.Object.Raw
-	pod := corev1.Pod{}
-
-	err := json.NewDecoder(bytes.NewReader(rawRequest)).Decode(&pod)
+	var pod corev1.Pod
+	err := json.NewDecoder(bytes.NewReader(admReq.Object.Raw)).Decode(&pod)
 	if err != nil {
-		err := fmt.Errorf("error decoding raw pod: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("error decoding raw pod: %w", err)
 	}
 
-	var patch string
-	patchType := v1.PatchTypeJSONPatch
-
-	log.Println("pod has following labels", pod.Labels)
-	if _, ok := pod.Labels["hasher-certificates-injector-sidecar"]; ok {
-		file, err := os.Open("/app/patch-json-command.json")
+	logEntry := logger.WithField("Pod", pod.Name)
+	logEntry.WithField("Annotations", pod.Annotations).Debug("Process Pod")
+	if value, ok := pod.Annotations[AnnotationIntegrityMonitorInject]; ok {
+		inject, err := strconv.ParseBool(value)
 		if err != nil {
-			log.Fatal("error did not opened the file", err)
+			logEntry.WithError(err).Error("failed parse inject annotation value")
 		}
-		defer file.Close()
-		data, err := ioutil.ReadAll(file)
-		if err != nil {
-			log.Fatal("error did not read the file", err)
+		if inject {
+			err := patchPod(&admissionResponse)
+			if err != nil {
+				logEntry.WithError(err).Error("failed patch pod")
+			}
 		}
-		patch = string(data)
 	}
-	admissionResponse.Allowed = true
-	if patch != "" {
-		log.Println("patching the pod with:", patch)
-		admissionResponse.PatchType = &patchType
-		admissionResponse.Patch = []byte(patch)
+	return &admissionResponse, nil
+}
+
+func patchPod(admissionResponse *admissionv1.AdmissionResponse) error {
+	file, err := os.Open("/app/patch-json-command.json")
+	if err != nil {
+		return fmt.Errorf("failed open patch file: %w", err)
+	}
+	defer file.Close()
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return fmt.Errorf("failed read patch file: %w", err)
 	}
 
-	return admissionResponse, nil
+	patchType := admissionv1.PatchTypeJSONPatch
+	admissionResponse.PatchType = &patchType
+	admissionResponse.Patch = data
+	return nil
 }
