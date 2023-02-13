@@ -3,9 +3,6 @@ appName: k8s-webhook-injector # application name
 mountPath: /ssl
 
 # Values for mutator-deployment
-
-namespaceDep: default # namespace of cluster
-
 contName: k8s-webhook-injector-ws # name of the container
 image: mutator:latest # image name
 pullPolicy: Never # pull policy for image
@@ -17,8 +14,6 @@ replicaCount: 1 # number of replicas
 # Values for mutator-ConfigMap
 
 confName: ssl-k8s-webhook-injector # configuration name
-
-namespaceMap: default # namespace of cluster
 
 serverCrt: "your certificate" # ssl key
 serverKey: "your key" # ssl certificate
@@ -37,3 +32,21 @@ namespaceService: default # namespace of cluster
 
 port: 443 # port of this service
 targetPort: 8443 # port to accept traffic on
+
+sideCar:
+  secretName: db-secret-database-to-integrity-sum
+  resources:
+    requests:
+      memory: "50Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "150m"
+  db:
+    host: localhost
+    port: 5432
+    name: "hashsums"
+  durationTime: 30 # may be pollInterval will be more descriptive
+  workers: 4
+  procDir: /proc
+  algorithm: SHA256

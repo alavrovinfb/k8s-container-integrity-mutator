@@ -1,0 +1,29 @@
+containers:
+  - name: hasher-sidecar
+    image: {{ .Values.image }}
+    imagePullPolicy: {{ .Values.pullPolicy | default "Always" }}
+    args:
+      - --db-host={{ .Values.sideCar.db.host }}
+      - --db-port={{ .Values.sideCar.db.port }}
+      - --db-name={{ .Values.sideCar.db.name }}
+      - --duration-time={{ .Values.sideCar.durationTime }}
+      - --count-workers={{ .Values.sideCar.workers }}
+      - --proc-dir={{ .Values.sideCar.procDir }}
+      - --algorithm={{ .Values.sideCar.algorithm }}
+    envFrom:
+      - secretRef:
+          name: {{ .Values.sideCar.secretName }}
+    env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      - name: DEPLOYMENT_TYPE
+        value: deployment
+    resources: {{.Values.sideCar.resources | toYaml | trimSuffix "\n" | nindent 8 }}
+    securityContext:
+      capabilities:
+        add:
+          - SYS_PTRACE
+    stdin: true
+    tty: true

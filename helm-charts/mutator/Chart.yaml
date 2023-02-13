@@ -1,6 +1,6 @@
 apiVersion: v2
-name: Mutator-HelmChart
-description: Helm for mutator
+name: integrity-monitor-injector
+description: Helm for integrity-monitor-injector
 type: application
 version: 0.1.0
 appVersion: "1.0.0"

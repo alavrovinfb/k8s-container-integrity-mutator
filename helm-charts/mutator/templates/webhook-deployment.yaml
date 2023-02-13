@@ -1,8 +1,9 @@
+{{- $validator := .Values.validationWebhook -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.appName }}
-  namespace: {{ .Values.namespaceDep }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -23,7 +24,12 @@ spec:
           volumeMounts:
             - name: {{ .Values.confName }}
               mountPath: {{ .Values.mountPath }}
+            - name: sidecar-config
+              mountPath: /etc/sidecar/config
       volumes:
         - name: {{ .Values.confName }}
           configMap:
             name: {{ .Values.confName }}
+        - name: sidecar-config
+          configMap:
+            name: {{ .Values.appName }}-sidecar-config
