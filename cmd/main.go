@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/k8s-container-integrity-monitor/pkg/handlers"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -17,7 +19,7 @@ func main() {
 	h.Register(mux)
 
 	s := &http.Server{
-		Addr:           ":8443",
+		Addr:           fmt.Sprintf(":%d", viper.GetInt("webhook.port")),
 		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
@@ -25,7 +27,8 @@ func main() {
 	}
 
 	logger.Info("Start Integrity Monitor Injector webhook server")
-	if err := s.ListenAndServeTLS("./ssl/k8s-webhook-injector.pem", "./ssl/k8s-webhook-injector.key"); err != nil {
+	time.Sleep(5 * time.Minute)
+	if err := s.ListenAndServeTLS(viper.GetString("tls.cert.file"), viper.GetString("tls.key.file")); err != nil {
 		logger.WithError(err).Fatal("Failed run http server")
 	}
 }
