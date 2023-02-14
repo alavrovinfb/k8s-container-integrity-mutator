@@ -18,6 +18,11 @@ spec:
         - name: {{ .Values.contName }}
           image: {{ .Values.image }}
           imagePullPolicy: {{ .Values.pullPolicy }}
+          args:
+            - --webhook.port={{ .Values.containerPort }}
+            - --tls.cert.file={{ .Values.mountPath }}/{{ .Values.serverCrtFile }}
+            - --tls.key.file={{ .Values.mountPath }}/{{ .Values.serverKeyFile }}
+            - --sidecar.cfg.file={{ .Values.sideCarConfig }}
           ports:
             - name: http
               containerPort: {{ .Values.containerPort }}
@@ -28,8 +33,8 @@ spec:
               mountPath: /etc/sidecar/config
       volumes:
         - name: {{ .Values.confName }}
-          configMap:
-            name: {{ .Values.confName }}
+          secret:
+            secretName: {{ .Values.confName }}
         - name: sidecar-config
           configMap:
             name: {{ .Values.appName }}-sidecar-config

@@ -15,11 +15,16 @@ replicaCount: 1 # number of replicas
 
 confName: ssl-k8s-webhook-injector # configuration name
 
+# TODO should be removed after implementation of helm based certificate generation
 serverCrt: "your certificate" # ssl key
 serverKey: "your key" # ssl certificate
 
-# Values for mutator-configuration
+# cert and key file names referenced to corresponding config map keys with certificate and key
+serverCrtFile: server.crt
+serverKeyFile: server.key
 
+# Values for mutator-configuration
+sideCarConfig: /etc/sidecar/config/monitor-sidecar-config.yaml
 namespaceConf: default # namespace of cluster
 
 caBundle: "your CA certificate" # caBundle value
@@ -34,6 +39,7 @@ port: 443 # port of this service
 targetPort: 8443 # port to accept traffic on
 
 sideCar:
+  image: hasher:latest
   secretName: db-secret-database-to-integrity-sum
   resources:
     requests:
@@ -43,10 +49,10 @@ sideCar:
       memory: "128Mi"
       cpu: "150m"
   db:
-    host: localhost
+    host: db-postgresql
     port: 5432
-    name: "hashsums"
-  durationTime: 30 # may be pollInterval will be more descriptive
+    name: ""
+  durationTime: 30s # may be pollInterval will be more descriptive
   workers: 4
   procDir: /proc
   algorithm: SHA256

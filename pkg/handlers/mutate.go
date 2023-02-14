@@ -29,6 +29,7 @@ func (h *Handers) Register(r Router) {
 }
 
 func (h *Handers) mutate(w http.ResponseWriter, r *http.Request) {
+	h.logger.Debug("starting mutation")
 	admReview, err := admissionReviewFromRequest(r)
 	if err != nil {
 		h.logger.WithError(err).Errorf("Failed getting admission review from request")

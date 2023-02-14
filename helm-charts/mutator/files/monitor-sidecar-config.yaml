@@ -1,6 +1,6 @@
 containers:
   - name: hasher-sidecar
-    image: {{ .Values.image }}
+    image: {{ .Values.sideCar.image }}
     imagePullPolicy: {{ .Values.pullPolicy | default "Always" }}
     args:
       - --db-host={{ .Values.sideCar.db.host }}
