@@ -20,10 +20,10 @@ docker:
 
 .PHONY: helm
 helm-mutator:
-	helm install ${APP_NAME} helm-charts/mutator
+	helm upgrade -i ${APP_NAME} helm-charts/mutator
 
 helm-demo:
-	helm install ${DEMO_NAME} helm-charts/demo-app-to-inject
+	helm upgrade -i ${DEMO_NAME} helm-charts/demo-app-to-inject
 
 .PHONY : tidy
 tidy: ## Cleans the Go module.
