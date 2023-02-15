@@ -1,4 +1,4 @@
-{{- define "helpers.injectionNamespaceSelector" }}
+{{- define "injector.NamespaceSelector" }}
 {{- if .Values.injectionNamespaces }}
 namespaceSelector:
   matchExpressions:
