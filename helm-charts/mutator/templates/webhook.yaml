@@ -16,6 +16,22 @@ webhooks:
         apiGroups: [""]
         apiVersions: ["v1"]
         resources: ["pods"]
+    {{- if .Values.injectionNamespaces }}
+    {{- if gt (len .Values.injectionNamespaces) 0 }}
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            {{ toYaml .Values.injectionNamespaces }}
+    {{- end }}
+    {{- end }}
+    matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+          - kube-system
+          - kube-public
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: None
     timeoutSeconds: 5

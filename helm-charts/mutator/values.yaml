@@ -37,3 +37,6 @@ namespaceService: default # namespace of cluster
 
 port: 443 # port of this service
 targetPort: 8443 # port to accept traffic on
+
+injectionNamespaces:
+  - default
