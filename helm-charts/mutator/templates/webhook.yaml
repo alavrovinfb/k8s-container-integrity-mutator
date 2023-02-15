@@ -16,14 +16,7 @@ webhooks:
         apiGroups: [""]
         apiVersions: ["v1"]
         resources: ["pods"]
-{{- if .Values.injectionNamespaces }}
-    namespaceSelector:
-      matchExpressions:
-        - key: kubernetes.io/metadata.name
-          operator: In
-          values:
-{{ toYaml .Values.injectionNamespaces | indent 12 }}
-{{- end }}
+{{- include "helpers.injectionNamespaceSelector" . | indent 4 }}
     matchExpressions:
       - key: kubernetes.io/metadata.name
         operator: NotIn
