@@ -23,7 +23,7 @@ webhooks:
         - key: kubernetes.io/metadata.name
           operator: In
           values:
-            {{ toYaml .Values.injectionNamespaces }}
+{{ toYaml .Values.injectionNamespaces | indent 12 }}
     {{- end }}
     {{- end }}
     matchExpressions:

@@ -1,8 +1,9 @@
+{{- $validator := .Values.validationWebhook -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.appName }}
-  namespace: {{ .Values.namespaceDep }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -17,13 +18,23 @@ spec:
         - name: {{ .Values.contName }}
           image: {{ .Values.image }}
           imagePullPolicy: {{ .Values.pullPolicy }}
+          args:
+            - --webhook.port={{ .Values.containerPort }}
+            - --tls.cert.file={{ .Values.mountPath }}/{{ .Values.serverCrtFile }}
+            - --tls.key.file={{ .Values.mountPath }}/{{ .Values.serverKeyFile }}
+            - --sidecar.cfg.file={{ .Values.sideCarConfig }}
           ports:
             - name: http
               containerPort: {{ .Values.containerPort }}
           volumeMounts:
             - name: {{ .Values.confName }}
               mountPath: {{ .Values.mountPath }}
+            - name: sidecar-config
+              mountPath: /etc/sidecar/config
       volumes:
         - name: {{ .Values.confName }}
+          secret:
+            secretName: {{ .Values.confName }}
+        - name: sidecar-config
           configMap:
-            name: {{ .Values.confName }}
+            name: {{ .Values.appName }}-sidecar-config
