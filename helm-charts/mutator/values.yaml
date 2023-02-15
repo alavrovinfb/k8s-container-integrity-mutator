@@ -25,16 +25,12 @@ serverKeyFile: server.key
 
 # Values for mutator-configuration
 sideCarConfig: /etc/sidecar/config/monitor-sidecar-config.yaml
-namespaceConf: default # namespace of cluster
 
 caBundle: "your CA certificate" # caBundle value
 
 path: "/mutate"
 
 # Values for mutator-service
-
-namespaceService: default # namespace of cluster
-
 port: 443 # port of this service
 targetPort: 8443 # port to accept traffic on
 
