@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }}-sidecar-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: {{ .Values.appName }}
+data:
+{{ tpl (.Files.Glob "files/*.yaml").AsConfig . | indent 2 }}
