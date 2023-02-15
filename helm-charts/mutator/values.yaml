@@ -49,6 +49,7 @@ sideCar:
       memory: "128Mi"
       cpu: "150m"
   db:
+    # db name usually passed through ENVs DB_NAME, DB_HOST, DB_PORT,but could be defined here as well
     host: db-postgresql
     port: 5432
     name: ""
