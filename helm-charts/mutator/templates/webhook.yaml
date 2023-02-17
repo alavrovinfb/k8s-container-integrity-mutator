@@ -1,7 +1,7 @@
 {{- $caPrefix := printf "%s-ca" .Release.Name }}
 {{- $ca := genCA $caPrefix 365 }}
 {{- $cn := .Release.Name }}
-{{- $altName := printf "%s.%s.svc %s" .Release.Name .Release.Namespace .Values.certHostNames}}
+{{- $altName := printf "%s.%s.svc" .Values.appName .Release.Namespace}}
 {{- $cert := genSignedCert $cn nil (list $altName) 365 $ca }}
 ---
 apiVersion: v1

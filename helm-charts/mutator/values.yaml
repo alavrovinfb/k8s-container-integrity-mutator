@@ -19,9 +19,6 @@ confName: ssl-k8s-webhook-injector # configuration name
 serverCrtFile: server.crt
 serverKeyFile: server.key
 
-# hostnames to generate certificates for
-certHostNames: "k8s-webhook-injector k8s-webhook-injector.default.svc.cluster.local k8s-webhook-injector.default.svc localhost 127.0.0.1"
-
 # Values for mutator-configuration
 sideCarConfig: /etc/sidecar/config/monitor-sidecar-config.yaml
 
