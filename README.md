@@ -33,15 +33,28 @@ You can find the necessary installation information at this link https://helm.sh
 
 ### Configuration
 To work properly, you first need to sett the configuration files:
-+ values in the file `helm-charts/mutator/values.yaml`
++ values in the file `helm-charts/integrity-injector/values.yaml`
 + values in the file `helm-charts/demo-app-to-inject/values.yaml`
 
 ### Run helm-charts
 Install helm chart with mutator app
 ```
-helm install mutator helm-charts/mutator
+make helm-mutator
+```
+or via helm
+```
+helm install mutator helm-charts/integrity-injector
 ```
 Install helm chart with demo app
+install with db
+```
+make helm-demo-with-db
+```
+install without db
+```
+make helm-demo
+```
+or through helm
 ```
 helm install demo-app helm-charts/demo-app-to-inject
 ```

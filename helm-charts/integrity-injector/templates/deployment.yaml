@@ -1,0 +1,70 @@
+{{- $app := include "integrity-injector.fullname" . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $app }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "integrity-injector.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "integrity-injector.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "integrity-injector.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "integrity-injector.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+          - --webhook.port={{ .Values.webhook.port }}
+          - --tls.cert.file={{ .Values.webhook.certPath }}/{{ .Values.webhook.serverCrtFile }}
+          - --tls.key.file={{ .Values.webhook.certPath }}/{{ .Values.webhook.serverKeyFile }}
+          - --sidecar.cfg.file={{ .Values.webhook.sideCarConfigPath }}/{{ .Values.webhook.sideCarConfigFile}}
+          ports:
+            - name: webhook
+              containerPort: {{ .Values.webhook.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: webhook-ssl
+              mountPath: {{ .Values.webhook.certPath }}
+            - name: sidecar-config
+              mountPath: {{ .Values.webhook.sideCarConfigPath }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: webhook-ssl
+          secret:
+            secretName: {{ $app }}-certs
+        - name: sidecar-config
+          configMap:
+            name: {{ $app }}-sidecar-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
