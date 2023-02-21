@@ -36,6 +36,7 @@ func TestSidecarConfig_ConfigFromAnnotations(t *testing.T) {
 					AnnotationIntegrityMonitorInject: "true",
 					AnnotationMonitoringPath:         "/proc",
 					AnnotationProcessName:            "pname",
+					"unneeded-annotation":            "value",
 				},
 			},
 			want: []string{"--testpar1=1", "--testpar2=2", "--process=pname", "--monitoring-path=/proc"},

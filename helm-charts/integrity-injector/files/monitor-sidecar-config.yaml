@@ -1,11 +1,12 @@
 containers:
   - name: hasher-sidecar
     image: { { .Values.sideCar.image } }
-    imagePullPolicy: { { .Values.pullPolicy | default "Always" } }
+    imagePullPolicy: { { .Values.sideCar.pullPolicy | default "Always" } }
     args:
       - --db-host={{ .Values.sideCar.db.host }}
       - --db-port={{ .Values.sideCar.db.port }}
       - --db-name={{ .Values.sideCar.db.name }}
+      - --db-user={{ .Values.sideCar.db.username }}
       - --duration-time={{ .Values.sideCar.durationTime }}
       - --count-workers={{ .Values.sideCar.workers }}
       - --proc-dir={{ .Values.sideCar.procDir }}
@@ -17,6 +18,11 @@ containers:
       - secretRef:
           name: { { .Values.sideCar.secretName } }
     env:
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: { { .Values.sideCar.secretName } }
+            key: password
       - name: POD_NAME
         valueFrom:
           fieldRef:

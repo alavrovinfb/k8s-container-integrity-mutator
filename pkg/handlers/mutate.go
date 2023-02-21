@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/k8s-container-integrity-monitor/pkg/mutate"
+	"github.com/ScienceSoft-Inc/k8s-container-integrity-mutator/pkg/mutate"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 )

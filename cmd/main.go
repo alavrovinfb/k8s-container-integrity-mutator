@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/k8s-container-integrity-monitor/pkg/handlers"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"github.com/ScienceSoft-Inc/k8s-container-integrity-mutator/pkg/handlers"
 )
 
 func main() {

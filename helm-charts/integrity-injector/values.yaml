@@ -1,0 +1,97 @@
+# Default values for integrity-injector.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: integrity-injector
+  pullPolicy: Never
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  {}
+  # fsGroup: 2000
+
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 443
+
+webhook:
+  port: 8443
+  path: /mutate
+  certPath: /ssl
+  # cert and key file names referenced to corresponding config map keys with certificate and key
+  serverCrtFile: server.crt
+  serverKeyFile: server.key
+  sideCarConfigPath: /etc/sidecar/config
+  # Values for mutator-configuration
+  sideCarConfigFile: monitor-sidecar-config.yaml
+
+sideCar:
+  image: integrity:latest
+  pullPolicy: Never
+  secretName: ""
+  resources:
+    requests:
+      memory: "50Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "150m"
+  db:
+    # db name usually passed through ENVs DB_NAME, DB_HOST, DB_PORT,but could be defined here as well
+    host: db-postgresql
+    port: 5432
+    name: ""
+    username: ""
+  splunk:
+    url: "" # full url to Splunk HEC https://splunk:8088/services/collector/event
+    token: "" # Splunk HEC Token
+    insecureSkipVerify: true # skip certificate verification
+  durationTime: 30s # may be pollInterval will be more descriptive
+  workers: 4
+  procDir: /proc
+  algorithm: SHA256
+
+injectionNamespaces:
+  - default
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

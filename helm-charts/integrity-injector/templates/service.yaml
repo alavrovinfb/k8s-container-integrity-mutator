@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "integrity-injector.fullname" . }}
+  labels:
+    {{- include "integrity-injector.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: webhook
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "integrity-injector.selectorLabels" . | nindent 4 }}
