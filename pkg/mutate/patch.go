@@ -9,6 +9,8 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+const annotationPrefix = "integrity-monitor.scnsoft.com"
+
 // SidecarConfig for sidecar parameters.
 type SidecarConfig struct {
 	Volumes        []v1.Volume    `json:"volumes"`
@@ -76,7 +78,7 @@ func addPatches[T any](newCollection []T, existingCollection []T, path string) [
 func (sc *SidecarConfig) ConfigFromAnnotations(annotations map[string]string) {
 	for i := range sc.Containers {
 		for k, v := range annotations {
-			if k != AnnotationIntegrityMonitorInject {
+			if strings.HasPrefix(k, annotationPrefix) && k != AnnotationIntegrityMonitorInject {
 				list := strings.Split(k, "/")
 				sc.Containers[i].Args = append(sc.Containers[i].Args, fmt.Sprintf("--%s=%s", list[len(list)-1], v))
 			}
