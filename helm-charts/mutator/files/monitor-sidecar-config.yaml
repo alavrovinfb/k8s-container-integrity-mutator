@@ -1,7 +1,7 @@
 containers:
   - name: hasher-sidecar
-    image: {{ .Values.sideCar.image }}
-    imagePullPolicy: {{ .Values.pullPolicy | default "Always" }}
+    image: { { .Values.sideCar.image } }
+    imagePullPolicy: { { .Values.pullPolicy | default "Always" } }
     args:
       - --db-host={{ .Values.sideCar.db.host }}
       - --db-port={{ .Values.sideCar.db.port }}
@@ -10,9 +10,12 @@ containers:
       - --count-workers={{ .Values.sideCar.workers }}
       - --proc-dir={{ .Values.sideCar.procDir }}
       - --algorithm={{ .Values.sideCar.algorithm }}
+      - --splunk-url={{ .Values.sideCar.splunk.url }}
+      - --splunk-token={{ .Values.sideCar.splunk.token }}
+      - --splunk-insecure-skip-verify={{ .Values.sideCar.splunk.insecureSkipVerify }}
     envFrom:
       - secretRef:
-          name: {{ .Values.sideCar.secretName }}
+          name: { { .Values.sideCar.secretName } }
     env:
       - name: POD_NAME
         valueFrom:
@@ -20,7 +23,8 @@ containers:
             fieldPath: metadata.name
       - name: DEPLOYMENT_TYPE
         value: deployment
-    resources: {{.Values.sideCar.resources | toYaml | trimSuffix "\n" | nindent 8 }}
+    resources:
+      { { .Values.sideCar.resources | toYaml | trimSuffix "\n" | nindent 8 } }
     securityContext:
       capabilities:
         add:

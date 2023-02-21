@@ -46,6 +46,10 @@ sideCar:
     host: db-postgresql
     port: 5432
     name: ""
+  splunk:
+    url: "https://splunk:8088/services/collector/event" # full url to Splunk HEC https://splunk:8088/services/collector/event
+    token: "259eec5b-7977-4af2-9ee2-d8d567148d7a" # Splunk HEC Token
+    insecureSkipVerify: true # skip certificate verification
   durationTime: 30s # may be pollInterval will be more descriptive
   workers: 4
   procDir: /proc
