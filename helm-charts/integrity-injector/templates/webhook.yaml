@@ -1,37 +1,39 @@
 {{- $caPrefix := printf "%s-ca" .Release.Name }}
+{{- $app := include "integrity-injector.fullname" . }}
 {{- $ca := genCA $caPrefix 365 }}
 {{- $cn := .Release.Name }}
-{{- $altName := printf "%s.%s.svc" .Values.appName .Release.Namespace}}
+{{- $altName := printf "%s.%s.svc" $app .Release.Namespace}}
 {{- $cert := genSignedCert $cn nil (list $altName) 365 $ca }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: {{ .Values.confName }}
+  name: {{ $app }}-certs
   namespace: {{ .Release.Namespace }}
 data:
-  server.crt: {{ b64enc $cert.Cert }}
-  server.key: {{ b64enc $cert.Key }}
+  {{ .Values.webhook.serverCrtFile }}: {{ b64enc $cert.Cert }}
+  {{ .Values.webhook.serverKeyFile }}: {{ b64enc $cert.Key }}
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: {{ .Values.appName }}
+  name: {{ include "integrity-injector.name" . }}
 webhooks:
   - name: k8s-webhook-injector.default.svc.cluster.local
     failurePolicy: Ignore
     clientConfig:
       service:
-        name: {{ .Values.appName }}
+        name: {{ $app }}
         namespace: {{ .Release.Namespace }}
-        path: {{ .Values.path }}
+        path: {{ .Values.webhook.path }}
       caBundle: {{ b64enc $ca.Cert }}
     rules:
       - operations: [ "CREATE" ]
         apiGroups: [""]
         apiVersions: ["v1"]
         resources: ["pods"]
-    matchExpressions:
+    objectSelector:
+      matchExpressions:
       - key: kubernetes.io/metadata.name
         operator: NotIn
         values:
@@ -40,4 +42,4 @@ webhooks:
     admissionReviewVersions: ["v1", "v1beta1"]
     sideEffects: None
     timeoutSeconds: 5
-{{- include "injector.NamespaceSelector" . | indent 4 }}
+{{- include "integrity-injector.NamespaceSelector" . | indent 4 }}

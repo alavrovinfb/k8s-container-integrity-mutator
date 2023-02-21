@@ -18,3 +18,23 @@ serviceAccount: hasher # Service account name
 
 # Number of replicas
 replicaCount: 1
+
+# deploys the postgresql chart alongside demo app
+postgresql:
+  enabled: false
+  primary:
+    persistence:
+      # Enable PostgreSQL Primary data persistence using PVC
+      enabled: true
+      existingClaim: ""
+      # mountPath: /bitnami/postgresql - default mountPath
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+  fullnameOverride: "db-postgresql"
+  global:
+    postgresql:
+      auth:
+        username: "test"
+        password: "test"
+        database: ""
