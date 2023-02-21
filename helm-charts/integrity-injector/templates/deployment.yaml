@@ -34,10 +34,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
-          - --webhook.port={{ .Values.webhook.port }}
-          - --tls.cert.file={{ .Values.webhook.certPath }}/{{ .Values.webhook.serverCrtFile }}
-          - --tls.key.file={{ .Values.webhook.certPath }}/{{ .Values.webhook.serverKeyFile }}
-          - --sidecar.cfg.file={{ .Values.webhook.sideCarConfigPath }}/{{ .Values.webhook.sideCarConfigFile}}
+            - --webhook.port={{ .Values.webhook.port }}
+            - --tls.cert.file={{ .Values.webhook.certPath }}/{{ .Values.webhook.serverCrtFile }}
+            - --tls.key.file={{ .Values.webhook.certPath }}/{{ .Values.webhook.serverKeyFile }}
+            - --sidecar.cfg.file={{ .Values.webhook.sideCarConfigPath }}/{{ .Values.webhook.sideCarConfigFile}}
           ports:
             - name: webhook
               containerPort: {{ .Values.webhook.port }}

@@ -8,53 +8,77 @@
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
 
 # k8s-container-integrity-mutator
+
 This application provides the injection of any patch inside any k8s schemas like sidecar.
 
-When applying a new scheme to a cluster, the application monitors the presence of a "hasher-certificates-injector-sidecar" label and, if available, makes a patch.
+When applying a new scheme to a cluster, the application monitors the presence of a "
+hasher-certificates-injector-sidecar" label and, if available, makes a patch.
 
 ## Architecture
+
 ### Statechart diagram
+
 ![File location: docs/diagrams/mutatorStatechartDiagram.png](/docs/diagrams/mutatorStatechartDiagram.png?raw=true "Statechart diagram")
+
 ### Sequence diagram
+
 ![File location: docs/diagrams/mutatorSequenceDiagram.png](/docs/diagrams/mutatorSequenceDiagram.png?raw=true "Sequence diagram")
+
 ## :hammer: Installing components
 
 ### Demo-app
-Here is a demo application in which a busybox container in `patch-json-command.json` is injected to a pod with an nginx container
+
+Here is a demo application in which a busybox container in `patch-json-command.json` is injected to a pod with an nginx
+container
 
 Build docker images mutator:
+
 ```
 eval $(minikube docker-env)
 docker build -t mutator .
 ```
+
 ## Install Helm
+
 Before using helm charts you need to install helm on your local machine.  
 You can find the necessary installation information at this link https://helm.sh/docs/intro/install/
 
 ### Configuration
+
 To work properly, you first need to sett the configuration files:
+
 + values in the file `helm-charts/integrity-injector/values.yaml`
 + values in the file `helm-charts/demo-app-to-inject/values.yaml`
 
 ### Run helm-charts
+
 Install helm chart with mutator app
+
 ```
 make helm-mutator
 ```
+
 or via helm
+
 ```
 helm install mutator helm-charts/integrity-injector
 ```
+
 Install helm chart with demo app
 install with db
+
 ```
 make helm-demo-with-db
 ```
+
 install without db
+
 ```
 make helm-demo
 ```
+
 or through helm
+
 ```
 helm install demo-app helm-charts/demo-app-to-inject
 ```
