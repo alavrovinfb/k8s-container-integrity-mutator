@@ -42,7 +42,7 @@ func InjectIntegrityMonitor(logger *logrus.Logger, admReq *admissionv1.Admission
 	logEntry := logger.WithField("Pod", pod.Name)
 	logEntry.WithField("Annotations", pod.Annotations).Debug("Process Pod")
 	if err := checkAnnotations(pod.GetAnnotations()); err != nil {
-		logEntry.WithError(err).Error("failed parse inject annotation value")
+		logEntry.Infof("pod %s has't got injector annotations, injection has been skipped", pod.GetName())
 		return &admissionResponse, nil
 	}
 	value := pod.GetAnnotations()[AnnotationIntegrityMonitorInject]
