@@ -50,6 +50,13 @@ To work properly, you first need to sett the configuration files:
 + values in the file `helm-charts/integrity-injector/values.yaml`
 + values in the file `helm-charts/demo-app-to-inject/values.yaml`
 
+In order to use make targets to lunch integrity-injector with/without demo app, following environment variables should be set:
+
+- DB_PASSWORD
+- DB_USER
+- DB_NAME
+- RELEASE_NAME_DB
+
 ### Run helm-charts
 
 Install helm chart with mutator app

@@ -1,7 +1,7 @@
 BINARY_NAME := mutator_app
 APP_NAME := mutator
 DEMO_NAME := demo
-
+RELEASE_NAME_DB ?= db
 POSTGRES_SERVICE ?= $(RELEASE_NAME_DB)-postgresql
 NAMESPACE ?= default
 
