@@ -11,6 +11,9 @@ containers:
       - --count-workers={{ .Values.sideCar.workers }}
       - --proc-dir={{ .Values.sideCar.procDir }}
       - --algorithm={{ .Values.sideCar.algorithm }}
+      - --splunk-url={{ .Values.sideCar.splunk.url }}
+      - --splunk-token={{ .Values.sideCar.splunk.token }}
+      - --splunk-insecure-skip-verify={{ .Values.sideCar.splunk.insecureSkipVerify }}
     env:
       - name: DB_PASSWORD
         valueFrom:
@@ -23,7 +26,7 @@ containers:
             fieldPath: metadata.name
       - name: DEPLOYMENT_TYPE
         value: deployment
-    resources: {{.Values.sideCar.resources | toYaml | trimSuffix "\n" | nindent 8 }}
+    resources: {{ .Values.sideCar.resources | toYaml | trimSuffix "\n" | nindent 8 }}
     securityContext:
       capabilities:
         add:
