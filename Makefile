@@ -4,6 +4,8 @@ DEMO_NAME := demo
 RELEASE_NAME_DB ?= db
 POSTGRES_SERVICE ?= $(RELEASE_NAME_DB)-postgresql
 NAMESPACE ?= default
+RELEASE_NAME_SYSLOG = rsyslog
+SYSLOG_ENABLED ?= false
 
 IMAGE_NAME ?= integrity-injector
 GIT_COMMIT := $(shell git describe --tags --long --dirty=-unsupported --always || echo pre-commit)
@@ -41,6 +43,7 @@ helm-mutator:
 		--set sideCar.db.password=$(DB_PASSWORD) \
 		--set image.repository=$(IMAGE_NAME)    \
 		--set image.tag=$(IMAGE_VERSION) \
+		--set sideCar.syslog.enabled=$(SYSLOG_ENABLED) \
 		$(HELM_CHART_PATH)/$(IMAGE_NAME)
 
 helm-demo:
@@ -58,6 +61,23 @@ helm-demo-with-db:
 		--set global.postgresql.auth.password=$(DB_PASSWORD) \
 		--set postgresql.enabled=true \
 		--set postgresql.fullnameOverride=$(POSTGRES_SERVICE) \
+		$(HELM_CHART_PATH)/demo-app-to-inject
+
+helm-demo-full:
+	@if [ $(SYSLOG_ENABLED) = "false" ]; then\
+        echo SYSLOG_ENABLED ENV is false please set to true;\
+        exit 1;\
+    fi
+	@helm upgrade -i ${DEMO_NAME} \
+		--namespace=$(NAMESPACE) \
+		--create-namespace \
+		--set global.postgresql.auth.database=$(DB_NAME) \
+		--set global.postgresql.auth.username=$(DB_USER) \
+		--set global.postgresql.auth.password=$(DB_PASSWORD) \
+		--set postgresql.enabled=true \
+		--set postgresql.fullnameOverride=$(POSTGRES_SERVICE) \
+		--set rsyslog.enabled=$(SYSLOG_ENABLED) \
+		--set rsyslog.fullnameOverride=$(RELEASE_NAME_SYSLOG) \
 		$(HELM_CHART_PATH)/demo-app-to-inject
 
 .PHONY : tidy

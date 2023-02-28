@@ -1,6 +1,7 @@
 # Default values for integrity-injector.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+cluster: dev
 
 replicaCount: 1
 
@@ -72,6 +73,11 @@ sideCar:
     url: "" # full url to Splunk HEC https://splunk:8088/services/collector/event
     token: "" # Splunk HEC Token
     insecureSkipVerify: true # skip certificate verification
+  syslog:
+    enabled: false
+    host: "rsyslog"
+    port: "514"
+    proto: "tcp"
   durationTime: 30s # may be pollInterval will be more descriptive
   workers: 4
   procDir: /proc
