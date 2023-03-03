@@ -38,3 +38,6 @@ postgresql:
         username: "test"
         password: "test"
         database: ""
+
+rsyslog:
+  enabled: false

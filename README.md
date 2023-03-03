@@ -84,6 +84,12 @@ install without db
 make helm-demo
 ```
 
+install demo with db and syslog server
+
+```
+make helm-demo-full
+```
+
 or through helm
 
 ```
