@@ -43,7 +43,7 @@ containers:
         command:
           - /bin/sh
           - -c
-          - "[ -f /tmp/integrity-monitor ] && pidof integritySum"
+          - "[ -f /tmp/integrity-monitor ] && pidof {{ .Values.sideCar.liveness.appName }}"
       initialDelaySeconds: 10
       periodSeconds: 5
     securityContext:

@@ -82,6 +82,8 @@ sideCar:
   workers: 4
   procDir: /proc
   algorithm: SHA256
+  liveness:
+    appName: integritySum
 
 injectionNamespaces:
   - default
