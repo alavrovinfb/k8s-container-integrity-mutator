@@ -38,6 +38,14 @@ containers:
       - name: DEPLOYMENT_TYPE
         value: deployment
     resources: {{ .Values.sideCar.resources | toYaml | trimSuffix "\n" | nindent 8 }}
+    livenessProbe:
+      exec:
+        command:
+          - /bin/sh
+          - -c
+          - "[ -f /tmp/integrity-monitor ] && pidof integritySum"
+      initialDelaySeconds: 10
+      periodSeconds: 5
     securityContext:
       capabilities:
         add:
