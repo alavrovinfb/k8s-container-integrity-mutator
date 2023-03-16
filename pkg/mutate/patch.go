@@ -9,7 +9,9 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-const annotationPrefix = "integrity-monitor.scnsoft.com"
+const (
+	monitoringOpts = "monitoring-options"
+)
 
 // SidecarConfig for sidecar parameters.
 type SidecarConfig struct {
@@ -77,11 +79,19 @@ func addPatches[T any](newCollection []T, existingCollection []T, path string) [
 // ConfigFromAnnotations creates config from pod annotations
 func (sc *SidecarConfig) ConfigFromAnnotations(annotations map[string]string) {
 	for i := range sc.Containers {
+		opts := make([]string, 0)
 		for k, v := range annotations {
-			if strings.HasPrefix(k, annotationPrefix) && k != AnnotationIntegrityMonitorInject {
-				list := strings.Split(k, "/")
-				sc.Containers[i].Args = append(sc.Containers[i].Args, fmt.Sprintf("--%s=%s", list[len(list)-1], v))
+			if strings.HasSuffix(k, AnnotationMonitoringPaths) {
+				procName := strings.TrimSuffix(k, fmt.Sprintf(".%s", AnnotationMonitoringPaths))
+				if procName != "" {
+					paths := strings.Split(v, ",")
+					for pi, p := range paths {
+						paths[pi] = strings.TrimSpace(p)
+					}
+					opts = append(opts, fmt.Sprintf("%s=%s", procName, strings.Join(paths, ",")))
+				}
 			}
 		}
+		sc.Containers[i].Args = append(sc.Containers[i].Args, fmt.Sprintf("--%s=%s", monitoringOpts, strings.Join(opts, " ")))
 	}
 }

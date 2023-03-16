@@ -16,8 +16,7 @@ import (
 
 const (
 	AnnotationIntegrityMonitorInject = "integrity-monitor.scnsoft.com/inject"
-	AnnotationProcessName            = "integrity-monitor.scnsoft.com/process"
-	AnnotationMonitoringPath         = "integrity-monitor.scnsoft.com/monitoring-path"
+	AnnotationMonitoringPaths        = "integrity-monitor.scnsoft.com/monitoring-paths"
 )
 
 func InjectIntegrityMonitor(logger *logrus.Logger, admReq *admissionv1.AdmissionRequest) (*admissionv1.AdmissionResponse, error) {
@@ -90,16 +89,22 @@ func checkAnnotations(annotations map[string]string) error {
 	if _, ok := annotations[AnnotationIntegrityMonitorInject]; !ok {
 		missedAnnotations = append(missedAnnotations, AnnotationIntegrityMonitorInject)
 	}
-	if _, ok := annotations[AnnotationMonitoringPath]; !ok {
-		missedAnnotations = append(missedAnnotations, AnnotationMonitoringPath)
+	if ok := checkPathsAnnotations(annotations); !ok {
+		missedAnnotations = append(missedAnnotations, AnnotationMonitoringPaths)
 	}
-	if _, ok := annotations[AnnotationProcessName]; !ok {
-		missedAnnotations = append(missedAnnotations, AnnotationProcessName)
-	}
-
 	if len(missedAnnotations) > 0 {
 		return fmt.Errorf("one ore more required annotations are missed %q", strings.Join(missedAnnotations, ","))
 	}
 
 	return nil
+}
+
+func checkPathsAnnotations(annotations map[string]string) (found bool) {
+	for k := range annotations {
+		if found = strings.Contains(k, AnnotationMonitoringPaths); found {
+			return true
+		}
+	}
+
+	return found
 }

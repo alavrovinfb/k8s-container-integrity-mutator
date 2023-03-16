@@ -41,3 +41,9 @@ postgresql:
 
 rsyslog:
   enabled: false
+
+monitoringConfig:
+  processName: nginx # Container process name
+  mountPaths: # Paths to monitoring
+    - etc/nginx
+    - usr/bin
