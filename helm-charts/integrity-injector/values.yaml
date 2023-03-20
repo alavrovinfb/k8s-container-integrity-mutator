@@ -70,6 +70,7 @@ sideCar:
     name: ""
     username: ""
   splunk:
+    enabled: false
     url: "" # full url to Splunk HEC https://splunk:8088/services/collector/event
     token: "" # Splunk HEC Token
     insecureSkipVerify: true # skip certificate verification

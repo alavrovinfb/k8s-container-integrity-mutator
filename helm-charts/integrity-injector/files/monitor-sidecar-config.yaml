@@ -11,14 +11,17 @@ containers:
       - --count-workers={{ .Values.sideCar.workers }}
       - --proc-dir={{ .Values.sideCar.procDir }}
       - --algorithm={{ .Values.sideCar.algorithm }}
-      - --splunk-url={{ .Values.sideCar.splunk.url }}
-      - --splunk-token={{ .Values.sideCar.splunk.token }}
+      {{- if .Values.sideCar.splunk.enabled }}
+      - --splunk-enabled={{ .Values.sideCar.splunk.enabled }}
+      - --splunk-url={{ required "url is required" .Values.sideCar.splunk.url }}
+      - --splunk-token={{ required "token is required" .Values.sideCar.splunk.token }}
       - --splunk-insecure-skip-verify={{ .Values.sideCar.splunk.insecureSkipVerify }}
+      {{- end }}
       {{- if .Values.sideCar.syslog.enabled }}
       - --syslog-enabled={{ .Values.sideCar.syslog.enabled }}
-      - --syslog-host={{ .Values.sideCar.syslog.host }}
-      - --syslog-port={{ .Values.sideCar.syslog.port }}
-      - --syslog-proto={{ .Values.sideCar.syslog.proto }}
+      - --syslog-host={{ required "host is required" .Values.sideCar.syslog.host }}
+      - --syslog-port={{ required "port is required" .Values.sideCar.syslog.port }}
+      - --syslog-proto={{ required "proto is required" .Values.sideCar.syslog.proto }}
       - --cluster-name={{ .Values.cluster }}
       {{- end }}
     env:
